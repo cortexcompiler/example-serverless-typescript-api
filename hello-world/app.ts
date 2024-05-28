@@ -33,8 +33,8 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Contex
     if (!segment) {
         response = {
             statusCode: 500,
-            body: "Failed to get segment"
-        }
+            body: 'Failed to get segment',
+        };
         return response;
     }
 
@@ -62,7 +62,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Contex
                 message: 'hello world',
             }),
         };
-        logger.info(`Successful response from API enpoint: ${event.path}`, response.body);
+        logger.info(`Successful response from API endpoint: ${event.path}`, response.body);
     } catch (err) {
         // Error handling
         response = {
@@ -72,7 +72,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Contex
             }),
         };
         tracer.addErrorAsMetadata(err as Error);
-        logger.error(`Error response from API enpoint: ${err}`, response.body);
+        logger.error(`Error response from API endpoint: ${err}`, response.body);
     } finally {
         // Close subsegments (the AWS Lambda one is closed automatically)
         subsegment.close(); // (### MySubSegment)
@@ -85,5 +85,4 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Contex
     }
 
     return response;
-
 };

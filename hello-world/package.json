@@ -14,7 +14,8 @@
   },
   "scripts": {
     "unit": "jest",
-    "lint": "eslint '*.ts' --quiet --fix",
+    "lint": "eslint '*.ts'",
+    "lint:fix": "eslint '*.ts' --quiet --fix",
     "compile": "tsc",
     "test": "npm run compile && npm run unit"
   },
