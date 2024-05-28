@@ -4,11 +4,13 @@
  */
 
 export default {
+    // preset: "ts-jest",
     transform: {
         '^.+\\.ts?$': 'ts-jest',
     },
     clearMocks: true,
     collectCoverage: true,
+    collectCoverageFrom: ['src/**/*.{ts,js}'],
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',
     setupFiles: ['./jest.env.js'],

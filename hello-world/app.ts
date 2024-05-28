@@ -1,10 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
-import { Metrics } from '@aws-lambda-powertools/metrics';
-import { Logger } from '@aws-lambda-powertools/logger';
-import { Tracer } from '@aws-lambda-powertools/tracer';
-const metrics = new Metrics();
-const logger = new Logger();
-const tracer = new Tracer();
+import { injectLambdaContext } from '@aws-lambda-powertools/logger/middleware';
+import middy from '@middy/core';
+import { logger } from './powertools';
+import { metrics } from './powertools';
+import { tracer } from './powertools';
 
 /**
  *
@@ -17,16 +16,12 @@ const tracer = new Tracer();
  *
  */
 
-export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
     let response: APIGatewayProxyResult;
 
     // Log the incoming event
     logger.info('Lambda invocation event', { event });
 
-    // Append awsRequestId to each log statement
-    logger.appendKeys({
-        awsRequestId: context.awsRequestId,
-    });
     // Get facade segment created by AWS Lambda
     const segment = tracer.getSegment();
 
@@ -86,3 +81,5 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent, context: Contex
 
     return response;
 };
+
+export const lambdaHandler = middy(handler).use(injectLambdaContext(logger));
