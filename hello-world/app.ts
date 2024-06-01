@@ -4,6 +4,7 @@ import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
 import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
 // NOTE from Powertools: "We guarantee support only for Middy.js v4.x, that you can install it by running npm i @middy/core@~4"
 import middy from '@middy/core';
+import httpErrorHandler from '@middy/http-error-handler';
 import { logger } from './powertools';
 import { metrics } from './powertools';
 // The Tracer requires the Lambda to have active tracing enabled
@@ -20,25 +21,16 @@ import { tracer } from './powertools';
  *
  */
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let response: APIGatewayProxyResult;
-
     logger.info('Lambda invocation event', { event });
 
-    try {
-        response = {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'hello world' }),
-        };
-        tracer.putAnnotation('successfulGreeting', true);
+    const response: APIGatewayProxyResult = {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'hello world' }),
+    };
 
-        logger.info(`Successful response from API endpoint: ${event.path}`, response.body);
-    } catch (err) {
-        response = {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'some error happened' }),
-        };
-        logger.error(`Error response from API endpoint: ${err}`, response.body);
-    }
+    tracer.putAnnotation('successfulGreeting', true);
+
+    logger.info('Successful response from API endpoint', { path: event.path, body: response.body });
 
     return response;
 };
@@ -49,4 +41,12 @@ const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
 export const lambdaHandler = middy(handler)
     .use(captureLambdaHandler(tracer))
     .use(injectLambdaContext(logger))
-    .use(logMetrics(metrics, { captureColdStartMetric: true }));
+    .use(logMetrics(metrics, { captureColdStartMetric: true }))
+    .use(
+        httpErrorHandler({
+            logger: (error) => {
+                logger.error('Unexpected error', error);
+            },
+            fallbackMessage: 'Unexpected error',
+        }),
+    );

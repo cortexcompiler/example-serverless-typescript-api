@@ -47,11 +47,12 @@ describe('hello-world handler', function () {
                 cold_start: false,
                 function_request_id: testRequestId,
                 level: 'INFO',
-                message: 'Successful response from API endpoint: /hello',
+                message: 'Successful response from API endpoint',
                 sampling_rate: 0,
                 service: 'helloWorld',
                 timestamp: fakeDateTime,
-                extra: '{"message":"hello world"}',
+                path: '/hello',
+                body: '{"message":"hello world"}',
             };
 
             expect(consoleInfoSpy).toHaveBeenNthCalledWith(2, JSON.stringify(expectedLog, null, 4));
