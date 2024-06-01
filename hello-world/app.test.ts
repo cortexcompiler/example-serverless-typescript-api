@@ -1,6 +1,7 @@
 import { Metrics } from '@aws-lambda-powertools/metrics';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { lambdaHandler } from './app';
+import { describe, expect, jest, it } from '@jest/globals';
 
 // quiet down tests and spy on console logs
 const consoleInfoSpy = jest.spyOn(global.console, 'info').mockImplementation(jest.fn());

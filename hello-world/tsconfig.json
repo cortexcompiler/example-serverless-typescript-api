@@ -1,6 +1,8 @@
+// TODO: look at the commented options to determine if we want to use them
 {
   "compilerOptions": {
     "target": "es2020",
+    // "target": "es2022",
     "strict": true,
     "preserveConstEnums": true,
     "noEmit": true,
@@ -10,6 +12,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
+    // "allowSyntheticDefaultImports": true
+    // "declaration": true,
+    // "noImplicitAny": true,
+    // "removeComments": true,
+    // "useUnknownInCatchVariables": false,
   },
   "exclude": ["node_modules"],
 }
