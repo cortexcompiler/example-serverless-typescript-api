@@ -15,10 +15,10 @@ const config: JestConfigWithTsJest = {
     coveragePathIgnorePatterns: ['/node_modules/', 'coverage/', '.eslintrc.js', '.prettierrc.js', 'jest.config.ts'],
     coverageThreshold: {
         global: {
-            branches: 33,
+            branches: 50,
             functions: 95,
-            lines: 80,
-            statements: 80,
+            lines: 85,
+            statements: 85,
         },
     },
     coverageDirectory: 'coverage',
