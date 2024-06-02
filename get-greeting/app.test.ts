@@ -10,7 +10,7 @@ jest.spyOn(Metrics.prototype, 'publishStoredMetrics').mockImplementation(jest.fn
 
 const fakeDateTime = '2024-04-16T00:00:00.000Z';
 
-describe('Greeting handler', function () {
+describe('Get Greeting handler', function () {
   let event: Partial<APIGatewayProxyEvent>;
   let context: Partial<Context>;
   const testRequestId = 'test-Request-Id';
@@ -48,7 +48,7 @@ describe('Greeting handler', function () {
       };
     });
 
-    describe('and a missing country', function () {
+    describe('and an undefined country greeting', function () {
       beforeEach(() => {
         event.pathParameters = { country: 'Kiribati' };
       });

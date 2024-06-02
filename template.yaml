@@ -6,37 +6,40 @@ Description: >
   Sample SAM Template for sam-ts-powertools-app
 
 Globals:
+  Api:
+    OpenApiVersion: 3.0.2
+    TracingEnabled: true
   Function:
-    Timeout: 3
+    Handler: app.lambdaHandler
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64
+    Timeout: 30
     MemorySize: 128
     Tracing: Active
     LoggingConfig:
       LogFormat: JSON
-  Api:
-    OpenApiVersion: 3.0.2
-    TracingEnabled: true
+    Environment:
+      Variables:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+        AWS_XRAY_CONTEXT_MISSING: "LOG_ERROR"
+        POWERTOOLS_LOG_LEVEL: DEBUG
+        POWERTOOLS_METRICS_NAMESPACE: sam-ts-powertools-app
+        POWERTOOLS_SERVICE_NAME: helloWorld
+        POWERTOOLS_TRACER_CAPTURE_HTTPS_REQUESTS: true
+        POWERTOOLS_TRACER_CAPTURE_RESPONSE: true
 
 Resources:
   GetGreetingFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: get-greeting/
-      Handler: app.lambdaHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      Tracing: Active
-      Environment:
-        Variables:
-          POWERTOOLS_SERVICE_NAME: helloWorld
-          POWERTOOLS_METRICS_NAMESPACE: sam-ts-powertools-app
-          LOG_LEVEL: INFO
       Events:
         Greeting:
           Type: Api
           Properties:
             # RestApiId: !Ref MainApi
-            Path: /get-greeting/{country}
+            Path: /greeting/{country}
             Method: get
             RequestParameters:
               - method.request.path.id:
@@ -47,6 +50,27 @@ Resources:
         Minify: true
         Target: es2020
         # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - app.ts
+
+  PutGreetingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: put-greeting/
+      Events:
+        Greeting:
+          Type: Api
+          Properties:
+            Path: /greeting/{country}
+            Method: put
+            RequestParameters:
+              - method.request.path.id:
+                  Required: true
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
         EntryPoints:
           - app.ts
 
