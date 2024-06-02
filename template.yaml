@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   sam-ts-powertools-app
@@ -13,16 +13,18 @@ Globals:
     LoggingConfig:
       LogFormat: JSON
   Api:
+    OpenApiVersion: 3.0.2
     TracingEnabled: true
+
 Resources:
-  HelloWorldFunction:
+  GetGreetingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello-world/
+      CodeUri: get-greeting/
       Handler: app.lambdaHandler
       Runtime: nodejs20.x
       Architectures:
-      - x86_64
+        - x86_64
       Tracing: Active
       Environment:
         Variables:
@@ -30,24 +32,28 @@ Resources:
           POWERTOOLS_METRICS_NAMESPACE: sam-ts-powertools-app
           LOG_LEVEL: INFO
       Events:
-        HelloWorld:
+        Greeting:
           Type: Api
           Properties:
-            Path: /hello
+            # RestApiId: !Ref MainApi
+            Path: /get-greeting/{country}
             Method: get
-    Metadata: # Manage esbuild properties
+            RequestParameters:
+              - method.request.path.id:
+                  Required: true
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
         Target: es2020
         # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
         EntryPoints:
-        - app.ts
+          - app.ts
 
 Outputs:
-  HelloWorldApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  # HelloWorldApi:
+  #   Description: API Gateway endpoint URL for Prod stage for Hello World function
+  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  GetGreetingFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
+    Value: !GetAtt GetGreetingFunction.Arn

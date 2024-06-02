@@ -1,3 +1,4 @@
+import { BadRequest } from 'http-errors';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { injectLambdaContext } from '@aws-lambda-powertools/logger/middleware';
 import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
@@ -9,6 +10,7 @@ import { logger } from './powertools';
 import { metrics } from './powertools';
 // The Tracer requires the Lambda to have active tracing enabled
 import { tracer } from './powertools';
+import { getGreeting } from './greeting-service';
 
 /**
  *
@@ -23,9 +25,17 @@ import { tracer } from './powertools';
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     logger.info('Lambda invocation event', { event });
 
+    if (!event.pathParameters?.country) {
+        throw new BadRequest('Missing country path parameter');
+    }
+
+    const country = event.pathParameters?.country;
+
+    const greeting = getGreeting(country);
+
     const response: APIGatewayProxyResult = {
         statusCode: 200,
-        body: JSON.stringify({ message: 'hello world' }),
+        body: JSON.stringify({ message: greeting }),
     };
 
     tracer.putAnnotation('successfulGreeting', true);
