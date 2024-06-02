@@ -23,40 +23,40 @@ import { getGreeting } from './greeting-service';
  *
  */
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    logger.info('Lambda invocation event', { event });
+  logger.info('Lambda invocation event', { event });
 
-    if (!event.pathParameters?.country) {
-        throw new BadRequest('Missing country path parameter');
-    }
+  if (!event.pathParameters?.country) {
+    throw new BadRequest('Missing country path parameter');
+  }
 
-    const country = event.pathParameters?.country;
+  const country = event.pathParameters?.country;
 
-    const greeting = getGreeting(country);
+  const greeting = getGreeting(country);
 
-    const response: APIGatewayProxyResult = {
-        statusCode: 200,
-        body: JSON.stringify({ message: greeting }),
-    };
+  const response: APIGatewayProxyResult = {
+    statusCode: 200,
+    body: JSON.stringify({ message: greeting }),
+  };
 
-    tracer.putAnnotation('successfulGreeting', true);
+  tracer.putAnnotation('successfulGreeting', true);
 
-    logger.info('Successful response from API endpoint', { path: event.path, body: response.body });
+  logger.info('Successful response from API endpoint', { path: event.path, body: response.body });
 
-    return response;
+  return response;
 };
 
 // Middy with Powertools best practices:
 // https://middy.js.org/docs/integrations/lambda-powertools/#best-practices
 
 export const lambdaHandler = middy(handler)
-    .use(captureLambdaHandler(tracer))
-    .use(injectLambdaContext(logger))
-    .use(logMetrics(metrics, { captureColdStartMetric: true }))
-    .use(
-        httpErrorHandler({
-            logger: (error) => {
-                logger.error('Unexpected error', error);
-            },
-            fallbackMessage: 'Unexpected error',
-        }),
-    );
+  .use(captureLambdaHandler(tracer))
+  .use(injectLambdaContext(logger))
+  .use(logMetrics(metrics, { captureColdStartMetric: true }))
+  .use(
+    httpErrorHandler({
+      logger: (error) => {
+        logger.error('Unexpected error', error);
+      },
+      fallbackMessage: 'Unexpected error',
+    })
+  );
