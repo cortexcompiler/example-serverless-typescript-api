@@ -12,7 +12,7 @@ const config: JestConfigWithTsJest = {
   collectCoverage: true,
   collectCoverageFrom: ['**/*.{ts,js}'],
   coverageReporters: ['text', 'json', 'json-summary', 'html', 'lcov'],
-  coveragePathIgnorePatterns: ['/node_modules/', 'coverage/', '.eslintrc.js', '.prettierrc.js', 'jest.config.ts'],
+  coveragePathIgnorePatterns: ['/node_modules/', 'coverage/', '.eslintrc.js', '.prettierrc.js', 'jest.config.ts', 'model.ts'],
   coverageThreshold: {
     global: {
       branches: 75,

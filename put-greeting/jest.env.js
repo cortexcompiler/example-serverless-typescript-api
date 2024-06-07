@@ -5,3 +5,5 @@ process.env.POWERTOOLS_METRICS_NAMESPACE = 'sam-ts-powertools-app';
 process.env.POWERTOOLS_DEV = 'true';
 
 process.env.POWERTOOLS_TRACE_ENABLED = false;
+
+process.env.TABLE_NAME = 'TestTable';

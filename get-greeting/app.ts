@@ -10,17 +10,21 @@ import { logger } from './powertools';
 import { metrics } from './powertools';
 // The Tracer requires the Lambda to have active tracing enabled
 import { tracer } from './powertools';
-import { getGreeting } from './greeting-service';
+import { getCountryGreeting } from './ddb-greeting';
+import { CountryGreeting } from './model';
+
+const DEFAULT_GREETING: CountryGreeting = {
+  country: 'USA',
+  greeting: 'Hello',
+};
 
 /**
- *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
  * @param {APIGatewayProxyEvent} event - API Gateway Lambda Proxy Input Format
  * @param {Context} object - API Gateway Lambda $context variable
  *
  * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
  * @returns {APIGatewayProxyResult} object - API Gateway Lambda Proxy Output Format
- *
  */
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Lambda invocation event', { event });
@@ -29,13 +33,19 @@ const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     throw new BadRequest('Missing country path parameter');
   }
 
+  checkForRequiredEnvVariable('TABLE_NAME');
+
   const country = event.pathParameters?.country;
 
-  const greeting = getGreeting(country);
+  let countryGreeting = await getCountryGreeting(country);
+
+  if (!countryGreeting) {
+    countryGreeting = DEFAULT_GREETING;
+  }
 
   const response: APIGatewayProxyResult = {
     statusCode: 200,
-    body: JSON.stringify({ message: greeting }),
+    body: JSON.stringify({ message: countryGreeting.greeting }),
   };
 
   tracer.putAnnotation('successfulGreeting', true);
@@ -45,9 +55,14 @@ const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   return response;
 };
 
+export function checkForRequiredEnvVariable(variableName: string) {
+  if (!process.env[variableName]) {
+    throw new Error(`Missing ${variableName} environment variable`);
+  }
+}
+
 // Middy with Powertools best practices:
 // https://middy.js.org/docs/integrations/lambda-powertools/#best-practices
-
 export const lambdaHandler = middy(handler)
   .use(captureLambdaHandler(tracer))
   .use(injectLambdaContext(logger))

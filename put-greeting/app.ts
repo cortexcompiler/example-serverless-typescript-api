@@ -8,18 +8,20 @@ import httpErrorHandler from '@middy/http-error-handler';
 import { logger } from './powertools';
 import { metrics } from './powertools';
 import { tracer } from './powertools';
-import { putGreeting } from './greeting-service';
+import { putGreeting } from './ddb-greeting';
 
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if (!event.pathParameters?.country) {
     throw new BadRequest('Missing country path parameter');
   }
 
+  checkForRequiredEnvVariable('TABLE_NAME');
+
   const country = event.pathParameters?.country;
 
   const countryGreeting = parseEventBody(event.body);
 
-  putGreeting(country, countryGreeting.greeting);
+  putGreeting({ country, greeting: countryGreeting.greeting });
 
   return {
     statusCode: 200,
@@ -35,6 +37,12 @@ function parseEventBody(eventData: string | null): { greeting: string } {
   const payload = JSON.parse(eventData) as { greeting: string };
 
   return payload;
+}
+
+export function checkForRequiredEnvVariable(variableName: string) {
+  if (!process.env[variableName]) {
+    throw new Error(`Missing ${variableName} environment variable`);
+  }
 }
 
 export const lambdaHandler = middy(handler)

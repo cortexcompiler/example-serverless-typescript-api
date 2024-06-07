@@ -30,10 +30,25 @@ Globals:
         POWERTOOLS_TRACER_CAPTURE_RESPONSE: true
 
 Resources:
+  GreetingTable:
+    Type: AWS::Serverless::SimpleTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      TableName: !Sub ${AWS::StackName}-Workshop
+      PrimaryKey:
+        Name: PK
+        Type: String
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
   GetGreetingFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: get-greeting/
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GreetingTable
       Events:
         Greeting:
           Type: Api
@@ -44,6 +59,9 @@ Resources:
             RequestParameters:
               - method.request.path.id:
                   Required: true
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref GreetingTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -57,6 +75,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: put-greeting/
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GreetingTable
       Events:
         Greeting:
           Type: Api
@@ -66,6 +87,9 @@ Resources:
             RequestParameters:
               - method.request.path.id:
                   Required: true
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref GreetingTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
