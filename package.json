@@ -10,12 +10,13 @@
     "lint:ci": "npm run lint && npm run prettier",
     "lint": "eslint --ext .js,.ts",
     "lint:fix": "eslint --ext .js,.ts --fix",
+    "cfn-lint": "sam validate --lint",
     "prettier": "prettier '**/*.{js,ts}' --check",
     "prettier:fix": "prettier '**/*.{js,ts}' --write",
+    "build": "sam build",
     "compile": "tsc",
-    "pre-commit": "npm run compile && npm run lint:ci && npm run test",
     "test": "jest",
-    "validate": "npm run lint && npm run compile && npm run test"
+    "validate": "npm run compile && npm run lint:ci && npm run build && npm run cfn-lint && npm run test"
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.1.1",

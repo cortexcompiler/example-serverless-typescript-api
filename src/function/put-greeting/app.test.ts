@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { DynamoDBDocument, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { CountryGreeting } from './model';
+import { CountryGreeting } from '../../model/model';
 import { lambdaHandler } from './app';
 
 // quiet down tests and spy on console logs

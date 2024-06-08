@@ -5,10 +5,8 @@ import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
 import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
 import middy from '@middy/core';
 import httpErrorHandler from '@middy/http-error-handler';
-import { logger } from './powertools';
-import { metrics } from './powertools';
-import { tracer } from './powertools';
-import { putGreeting } from './ddb-greeting';
+import { logger, metrics, tracer } from '../../powertools';
+import { putGreeting } from '../../database/ddb-greeting';
 
 const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if (!event.pathParameters?.country) {

@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { captureAWSv3Client } from 'aws-xray-sdk-core';
-import { logger } from './powertools';
+import { logger } from '../powertools';
 
 export const TABLE_NAME = process.env.TABLE_NAME;
 

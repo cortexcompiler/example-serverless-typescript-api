@@ -6,12 +6,10 @@ import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
 // NOTE from Powertools: "We guarantee support only for Middy.js v4.x, that you can install it by running npm i @middy/core@~4"
 import middy from '@middy/core';
 import httpErrorHandler from '@middy/http-error-handler';
-import { logger } from './powertools';
-import { metrics } from './powertools';
 // The Tracer requires the Lambda to have active tracing enabled
-import { tracer } from './powertools';
-import { getCountryGreeting } from './ddb-greeting';
-import { CountryGreeting } from './model';
+import { logger, metrics, tracer } from '../../powertools';
+import { CountryGreeting } from '../../model/model';
+import { getCountryGreeting } from '../../database/ddb-greeting';
 
 const DEFAULT_GREETING: CountryGreeting = {
   country: 'USA',

@@ -23,6 +23,7 @@ const config: JestConfigWithTsJest = {
   },
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
+  roots: ['src'],
   setupFiles: ['./jest.env.js'],
   testMatch: ['**/*.test.ts'],
   // testEnvironment: 'node',
